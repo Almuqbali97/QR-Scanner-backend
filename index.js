@@ -19,6 +19,7 @@ const allowedOriginsDynamic = [
     'https://mioc.netlify.app',
     "https://qr-scanner-frontend.vercel.app",
     'https://mioc.org.om',
+    "https://qr-scanner-frontend.onrender.com"
 ];
 
 // else
@@ -27,10 +28,6 @@ const allowedOriginsStatic = [
     'http://localhost:5173',
     "http://192.168.66.62:5173",
     "https://qr-scanner-frontend.vercel.app",
-    'https://mioc-website-client.vercel.app',
-    'https://mti.bankmuscat.com:6443/',
-    'https://smartpaytrns.bankmuscat.com/',
-    'https://spayuattrns.bmtest.om',
 ];
 
 app.use((req, res, next) => {
