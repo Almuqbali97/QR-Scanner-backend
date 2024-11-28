@@ -25,6 +25,8 @@ const allowedOriginsDynamic = [
 const allowedOriginsStatic = [
     'http://localhost:5000',
     'http://localhost:5173',
+    "http://192.168.66.62:5173/",
+    "https://qr-scanner-frontend.vercel.app",
     'https://mioc-website-client.vercel.app',
     'https://mti.bankmuscat.com:6443/',
     'https://smartpaytrns.bankmuscat.com/',
