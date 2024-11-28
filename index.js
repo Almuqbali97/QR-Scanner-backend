@@ -9,11 +9,56 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors({
-    origin: 'https://qr-scanner-frontend.vercel.app/',
-}));
+// app.use(cors({
+//     origin: 'https://qr-scanner-frontend.vercel.app',
+// }));
 
+// frontend url (only for requests coming from netlify or render)
+const allowedOriginsDynamic = [
+    'https://mioc-client.onrender.com',
+    'https://mioc.netlify.app',
+    "https://qr-scanner-frontend.vercel.app",
+    'https://mioc.org.om',
+];
 
+// else
+const allowedOriginsStatic = [
+    'http://localhost:5000',
+    'http://localhost:5173',
+    'https://mioc-website-client.vercel.app',
+    'https://mti.bankmuscat.com:6443/',
+    'https://smartpaytrns.bankmuscat.com/',
+    'https://spayuattrns.bmtest.om',
+];
+
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+
+    // Check if the origin is from Render or Netlify (dynamic origins)
+    if (allowedOriginsDynamic.includes(origin)) {
+        cors({
+            origin: function (origin, callback) {
+                if (!origin) return callback(null, true);
+                if (allowedOriginsDynamic.indexOf(origin) !== -1) {
+                    callback(null, true);
+                } else {
+                    callback(new Error('Not allowed by CORS'));
+                }
+            },
+            methods: ['GET', 'PUT', 'POST', 'DELETE'],
+            allowedHeaders: ['Content-Type'],
+            credentials: true // Allow cookies to be sent
+        })(req, res, next);
+    } else {
+        // Apply the static CORS config for other origins
+        cors({
+            origin: allowedOriginsStatic,
+            methods: ['GET', 'PUT', 'POST', 'DELETE'],
+            allowedHeaders: ['Content-Type'],
+            credentials: true // Allow cookies to be sent
+        })(req, res, next);
+    }
+});
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URL + "/QR-registration", {
     useNewUrlParser: true,
