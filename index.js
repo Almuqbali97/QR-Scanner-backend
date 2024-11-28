@@ -28,6 +28,7 @@ const allowedOriginsStatic = [
     'http://localhost:5173',
     "http://192.168.66.62:5173",
     "https://qr-scanner-frontend.vercel.app",
+    "https://toolsbox.om",
 ];
 
 app.use((req, res, next) => {
