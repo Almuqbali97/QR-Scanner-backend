@@ -39,7 +39,9 @@ const visitsSchema = new mongoose.Schema({
 const Visits = mongoose.model('Visits', visitsSchema);
 
 // Routes
-
+app.get('/', (req, res) => {
+    res.send("hello from Api")
+})
 // New Registration
 app.post('/register', async (req, res) => {
     const { firstName, lastName, mobileNumber, groupSize } = req.body;
