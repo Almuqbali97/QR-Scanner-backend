@@ -9,7 +9,10 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: 'https://your-frontend.vercel.app',
+}));
+
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URL + "/QR-registration", {
