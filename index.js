@@ -73,6 +73,7 @@ const registrationSchema = new mongoose.Schema({
     fullName: { type: String, required: true },
     mobileNumber: { type: String, required: true, unique: true },
     groupSize: { type: Number, default: 1 },
+    timestamp: { type: Date, default: Date.now }, // Add this field
 });
 
 const Registration = mongoose.model('Registration', registrationSchema);
