@@ -19,7 +19,8 @@ const allowedOriginsDynamic = [
     'https://mioc.netlify.app',
     "https://qr-scanner-frontend.vercel.app",
     'https://mioc.org.om',
-    "https://qr-scanner-frontend.onrender.com"
+    "https://qr-scanner-frontend.onrender.com",
+    'http://localhost:5173',
 ];
 
 // else
@@ -171,6 +172,82 @@ app.post('/entry', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
 });
+
+
+
+
+////////////////////////////////////
+
+// Generic function to fetch documents within a time range
+async function getDocumentsWithinTimeRange(model, timeField, startTimeUTC, endTimeUTC) {
+    try {
+        const startTime = new Date(startTimeUTC);
+        const endTime = new Date(endTimeUTC);
+
+        // Query the model using Mongoose
+        const documents = await model.find({
+            [timeField]: {
+                $gte: startTime,
+                $lt: endTime,
+            },
+        }).lean(); // Use `.lean()` to return plain JavaScript objects instead of Mongoose documents
+
+        // Convert timestamps to Oman time
+        return documents.map(doc => ({
+            ...doc,
+            // [timeField]: convertToOmanTime(new Date(doc[timeField])),
+        }));
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        throw new Error("Failed to fetch documents");
+    }
+}
+
+
+// Route handler
+app.post("/get-report", async (req, res) => {
+    // console.log("rout hit")
+    const { startTime, endTime } = req.body;
+    // console.log(startTime, endTime);
+
+    if (!startTime || !endTime) {
+        return res.status(400).json({ error: "startTime and endTime are required" });
+    }
+
+    try {
+        // Convert Oman time (UTC+4) input to UTC for querying the database
+        // const startTimeUTC = new Date(new Date(startTime).getTime() - 4 * 60 * 60 * 1000).toISOString(); // Subtract 4 hours
+        // const endTimeUTC = new Date(new Date(endTime).getTime() - 4 * 60 * 60 * 1000).toISOString(); // Subtract 4 hours
+
+        // Fetch registrations
+        const registrations = await getDocumentsWithinTimeRange(
+            Registration,
+            "timestamp",
+            startTime,
+            endTime
+        );
+
+        // Fetch visits
+        const visits = await getDocumentsWithinTimeRange(
+            Visits,
+            "entryTime",
+            startTime,
+            endTime
+        );
+
+        // Return combined report
+        return res.json({
+            registrations,
+            visits,
+        });
+    } catch (error) {
+        console.error("Error in /get-report route:", error.message);
+        return res.status(500).json({ error: "Internal server error", message: error.message });
+    }
+});
+
+
+
 
 // Start Server
 const PORT = process.env.PORT || 5000; // Use the PORT environment variable or fallback to 5000
